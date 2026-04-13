@@ -1,0 +1,10 @@
+customer_age,customer_region,customer_tenure_months,order_value,items_quantity,discount_value,payment_installments,delivery_time_days,delivery_delay_days,freight_value,delivery_attempts,customer_service_contacts,resolution_time_days,repeat_purchase_30d,complaints_count,csat_internal_score
+63,Nordeste,14,139.73,4,39.35,4,2,2,55.53,3,0,4,0,3,6.5
+20,Sul,1,458.95,2,9.51,10,6,4,28.23,3,0,10,0,3,0.0
+46,Nordeste,111,507.06,5,42.82,6,6,1,40.99,1,4,5,0,7,1.5
+52,Centro-Oeste,117,302.19,2,19.58,9,5,2,35.24,3,1,11,0,4,0.3
+56,Norte,50,253.06,1,29.37,11,13,1,39.32,1,1,0,0,3,8.5
+35,Sudeste,75,568.76,6,36.58,3,4,5,41.82,2,2,3,0,5,1.5
+37,Sudeste,68,41.29,3,99.62,6,8,3,35.83,3,3,4,0,6,0.6
+60,Sul,37,428.76,4,29.54,10,11,5,44.5,1,0,2,0,2,4.1
+40,Sul,60,121.56,3,91.95,6,6,3,24.88,2,1,9,0,3,0.8
