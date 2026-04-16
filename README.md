@@ -16,7 +16,6 @@ A proposta é permitir que a empresa:
 - Antecipe clientes com risco de se tornarem detratores  
 - Priorize clientes com maior impacto financeiro  
 - Direcione ações de retenção de forma estratégica  
-- Reduza churn e maximize o retorno das ações  
 
 ---
 
