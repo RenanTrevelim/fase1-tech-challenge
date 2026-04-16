@@ -4,7 +4,7 @@ from src.predict import predict
 
 
 st.set_page_config(
-    page_title="Previsão de NPS",
+    page_title="Motor de Decisão de NPS",
     page_icon="📈",
     layout="wide"
 )
@@ -14,16 +14,41 @@ def to_csv(df: pd.DataFrame) -> bytes:
     return df.to_csv(index=False).encode("utf-8")
 
 
-def classificar_nps(valor: float) -> str:
-    if valor <= 6:
-        return "Detrator"
-    elif valor <= 8:
+def segmentar_risco(risco: float) -> str:
+    if risco <= 0.4:
+        return "Seguro"
+    elif risco <= 0.6:
         return "Neutro"
-    return "Promotor"
+    elif risco <= 0.8:
+        return "Atenção"
+    return "Crítico"
 
 
-st.title("📈 Previsão de NPS")
-st.write("Faça upload de um arquivo CSV para análise em lote.")
+def definir_desconto(segmento: str) -> int:
+    if segmento == "Crítico":
+        return 40
+    elif segmento == "Atenção":
+        return 20
+    elif segmento == "Neutro":
+        return 10
+    return 0
+
+
+def recomendar_acao(segmento: str) -> str:
+    if segmento == "Crítico":
+        return "Cupom alto + contato imediato"
+    elif segmento == "Atenção":
+        return "Cupom moderado + acompanhamento"
+    elif segmento == "Neutro":
+        return "Ação preventiva"
+    return "Sem ação"
+
+
+st.title("📈 Motor de Decisão de NPS")
+st.write(
+    "Faça upload de um arquivo CSV para prever o NPS, identificar risco de insatisfação "
+    "e priorizar clientes para ações de retenção."
+)
 
 arquivo = st.file_uploader("Envie o arquivo CSV", type=["csv"])
 
@@ -38,27 +63,38 @@ if arquivo is not None:
         st.subheader("Prévia do arquivo")
         st.dataframe(df.head(), use_container_width=True)
 
-        with st.spinner("Gerando previsões..."):
+        with st.spinner("Gerando previsões e análises..."):
             previsoes = predict(df)
 
         df_resultado = df.copy()
+
         df_resultado["nps_previsto"] = previsoes
         df_resultado["nps_previsto"] = df_resultado["nps_previsto"].clip(0, 10).round(2)
-        df_resultado["classificacao_nps"] = df_resultado["nps_previsto"].apply(classificar_nps)
+
+        df_resultado["risco"] = ((10 - df_resultado["nps_previsto"]) / 10).round(4)
+        df_resultado["segmentacao_cliente"] = df_resultado["risco"].apply(segmentar_risco)
+        df_resultado["desconto_percentual"] = df_resultado["segmentacao_cliente"].apply(definir_desconto)
+
+        if "order_value" in df_resultado.columns:
+            df_resultado["prioridade_financeira"] = (
+                df_resultado["risco"] * df_resultado["order_value"]
+            ).round(2)
+
+        df_resultado["acao_sugerida"] = df_resultado["segmentacao_cliente"].apply(recomendar_acao)
 
         total_registros = len(df_resultado)
         media_nps = df_resultado["nps_previsto"].mean()
-        minimo_nps = df_resultado["nps_previsto"].min()
-        maximo_nps = df_resultado["nps_previsto"].max()
+        media_risco = df_resultado["risco"].mean()
 
-        detratores = (df_resultado["classificacao_nps"] == "Detrator").sum()
-        neutros = (df_resultado["classificacao_nps"] == "Neutro").sum()
-        promotores = (df_resultado["classificacao_nps"] == "Promotor").sum()
+        criticos = (df_resultado["segmentacao_cliente"] == "Crítico").sum()
+        atencao = (df_resultado["segmentacao_cliente"] == "Atenção").sum()
+        neutros_risco = (df_resultado["segmentacao_cliente"] == "Neutro").sum()
+        seguros = (df_resultado["segmentacao_cliente"] == "Seguro").sum()
 
         st.markdown("---")
-        st.subheader("Resumo das previsões")
+        st.subheader("Resumo executivo")
 
-        col1, col2, col3, col4 = st.columns(4)
+        col1, col2, col3 = st.columns(3)
 
         with col1:
             st.metric("Total de registros", total_registros)
@@ -69,48 +105,60 @@ if arquivo is not None:
             st.caption("Média das previsões geradas")
 
         with col3:
-            st.metric("Menor NPS previsto", f"{minimo_nps:.2f}")
-            st.caption("Valor mínimo encontrado")
-
-        with col4:
-            st.metric("Maior NPS previsto", f"{maximo_nps:.2f}")
-            st.caption("Valor máximo encontrado")
+            st.metric("Risco médio", f"{media_risco:.2%}")
+            st.caption("Média do risco de insatisfação")
 
         st.markdown("---")
-        st.subheader("Distribuição por classificação")
+        st.subheader("Distribuição por segmento de risco")
 
-        c1, c2, c3 = st.columns(3)
+        c1, c2, c3, c4 = st.columns(4)
 
         with c1:
-            st.markdown("## 🔴 Detratores")
-            st.write(f"Quantidade: **{detratores}**")
+            st.markdown("### 🟢 Seguro")
+            st.write(f"Quantidade: **{seguros}**")
 
         with c2:
-            st.markdown("## 🟡 Neutros")
-            st.write(f"Quantidade: **{neutros}**")
+            st.markdown("### 🟡 Neutro")
+            st.write(f"Quantidade: **{neutros_risco}**")
 
         with c3:
-            st.markdown("## 🟢 Promotores")
-            st.write(f"Quantidade: **{promotores}**")
+            st.markdown("### 🟠 Atenção")
+            st.write(f"Quantidade: **{atencao}**")
+
+        with c4:
+            st.markdown("### 🔴 Crítico")
+            st.write(f"Quantidade: **{criticos}**")
 
         st.markdown("---")
-        st.subheader("Prévia do resultado")
+        st.subheader("Resultado completo")
 
-        colunas_preview = ["nps_previsto", "classificacao_nps"]
+        colunas_preview = [
+            "nps_previsto",
+            "risco",
+            "segmentacao_cliente",
+            "desconto_percentual",
+            "acao_sugerida"
+        ]
+
+        if "prioridade_financeira" in df_resultado.columns:
+            colunas_preview.append("prioridade_financeira")
+
         if "customer_id" in df_resultado.columns:
             colunas_preview = ["customer_id"] + colunas_preview
 
+        colunas_existentes = [col for col in colunas_preview if col in df_resultado.columns]
+
         st.dataframe(
-            df_resultado,
+            df_resultado[colunas_existentes],
             use_container_width=True,
             hide_index=True,
-            height=400
+            height=450
         )
 
         st.download_button(
-            label="Baixar CSV com previsões",
+            label="Baixar CSV com análise completa",
             data=to_csv(df_resultado),
-            file_name="resultado_previsao_nps.csv",
+            file_name="resultado_analise_nps.csv",
             mime="text/csv"
         )
 
