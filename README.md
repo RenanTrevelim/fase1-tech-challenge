@@ -1,107 +1,112 @@
 # 📊 Análise de Satisfação do Cliente (NPS) + Motor de Decisão
 
-💡 Este projeto vai além da previsão de NPS, propondo um sistema de decisão que permite antecipar perdas de receita e atuar de forma estratégica na retenção de clientes.
+💡 Este projeto vai além da previsão de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar risco de insatisfação e priorizar ações com impacto direto na receita.
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-Este projeto tem como objetivo analisar os fatores que impactam a satisfação dos clientes, medida pelo **Net Promoter Score (NPS)**, e desenvolver um **modelo preditivo** capaz de estimar o NPS com base em dados operacionais.
+O objetivo é analisar os fatores que impactam a satisfação dos clientes (NPS) e desenvolver um modelo capaz de **prever o NPS com base em dados operacionais**.
 
-Além disso, o projeto evolui para um **motor de decisão**, transformando previsões em ações práticas com impacto direto no negócio.
+Além disso, o projeto evolui para um **sistema de decisão**, permitindo que a empresa:
 
-A proposta é permitir que a empresa:
-
-- Identifique os principais fatores que influenciam a satisfação e a insatisfação dos clientes  
-- Antecipe clientes com risco de se tornarem detratores  
+- Antecipe clientes com risco de insatisfação  
+- Identifique fatores críticos da experiência  
 - Priorize clientes com maior impacto financeiro  
 - Direcione ações de retenção de forma estratégica  
 
 ---
 
-## 📂 Descrição da Base de Dados
+## 📂 Base de Dados
 
-A base de dados contém informações relacionadas à jornada do cliente em um contexto de e-commerce, incluindo:
+Dataset com informações da jornada do cliente em um e-commerce:
 
 ### 🔢 Variáveis numéricas
-- `nps_score`
-- `delivery_delay_days`
-- `customer_service_contacts`
-- `complaints_count`
-- `csat_internal_score`
-- `order_value`
-- `items_quantity`
-- `discount_value`
-- `payment_installments`
-- `delivery_time_days`
-- `customer_age`
-- `customer_tenure_months`
-- `repeat_purchase_30d`
+- `nps_score`  
+- `delivery_delay_days`  
+- `customer_service_contacts`  
+- `complaints_count`  
+- `csat_internal_score`  
+- `order_value`  
+- `items_quantity`  
+- `discount_value`  
+- `payment_installments`  
+- `delivery_time_days`  
+- `customer_age`  
+- `customer_tenure_months`  
+- `repeat_purchase_30d`  
 
 ### 🌍 Variável categórica
 - `customer_region`
 
 ### 🆔 Identificadores
-- `customer_id`
-- `order_id`
-
-Essas variáveis permitem analisar tanto aspectos operacionais (logística e atendimento) quanto comportamento do cliente.
+- `customer_id`, `order_id`
 
 ---
 
-## 🧠 Metodologia Utilizada
+## 🔍 Principais Insights (EDA)
 
-O projeto foi estruturado em três etapas principais:
+- Alta concentração de **clientes detratores (~74%)**
+- Principais drivers de insatisfação:
+  - 🚚 Atraso na entrega  
+  - 📞 Número de reclamações  
+  - 📉 Contatos com atendimento  
+- Principal driver positivo:
+  - ⭐ CSAT interno  
 
----
-
-### 🔍 1. Análise Exploratória de Dados (EDA)
-
-- Tratamento de dados nulos e duplicados  
-- Estatística descritiva  
-- Análise da distribuição do NPS  
-- Correlação entre variáveis  
-- Visualizações (boxplot, histogramas, heatmap, pairplot)  
-
-#### 📌 Principais insights:
-
-- Predominância de clientes com **NPS baixo (detratores)**  
-- Fatores com maior impacto negativo:
-  - 🔻 Atraso na entrega  
-  - 🔻 Número de reclamações  
-  - 🔻 Contatos com atendimento  
-- Fator com maior impacto positivo:
-  - 🔺 CSAT interno  
-- Identificação de um **ponto crítico no CSAT (~6)**  
+💡 Foi identificado um **ponto de ruptura (~2 dias de atraso)**, onde o NPS começa a cair drasticamente.
 
 ---
 
-### ⚙️ 2. Modelagem Preditiva
+## 🧠 Modelagem Preditiva
 
-- Modelo de regressão linear  
-- Pipeline com:
-  - StandardScaler  
-  - OneHotEncoder  
-- Divisão treino/teste com estratificação  
+Foram testados diversos modelos de regressão:
 
-#### 📊 Avaliação:
-- R²  
-- MAE  
-- RMSE  
+- Linear Regression  
+- Decision Tree  
+- Random Forest  
+- Gradient Boosting  
+- XGBoost  
+- LightGBM  
 
-#### 📌 Resultado:
+### 🏆 Modelo escolhido:
+**Gradient Boosting**
 
-O modelo apresenta boa capacidade de estimar o NPS com base em variáveis operacionais, permitindo antecipar a satisfação do cliente.
-
----
-
-## 🚀 Geração de Valor para o Negócio
-
-O grande diferencial deste projeto está na transformação do modelo em um **sistema de decisão orientado por dados**.
+**Motivos:**
+- Melhor desempenho (RMSE e R²)
+- Maior estabilidade (cross-validation)
+- Boa capacidade de generalização
 
 ---
 
-### ⚠️ 1. Cálculo do Risco de Insatisfação
+## 🔧 Feature Engineering
+
+Variáveis criadas com base no EDA:
+
+- `entrega_problematica` → atraso + múltiplas tentativas  
+- `cliente_muito_acionado` → alto volume de contatos  
+
+👉 Essas features ajudam o modelo a capturar padrões de insatisfação de forma mais direta.
+
+---
+
+## 🔁 Validação do Modelo
+
+Cross-validation (5 folds):
+
+- RMSE médio: **~1.48**
+- R² médio: **~0.65**
+- Baixa variância → modelo **estável e confiável**
+
+---
+
+## 🚀 Geração de Valor (Diferencial do Projeto)
+
+O modelo foi transformado em um **motor de decisão de negócio**.
+
+---
+
+###  1. Cálculo de Risco
 
 ```python
 risco = (10 - nps_previsto) / 10
@@ -114,7 +119,7 @@ Permite transformar a previsão de NPS em uma métrica acionável:
 
 ---
 
-### 🧩 2. Segmentação de Clientes
+###  2. Segmentação de Clientes
 
 - 🟢 **Seguro**  
 - 🟡 **Neutro**  
@@ -125,7 +130,7 @@ Permite transformar a previsão de NPS em uma métrica acionável:
 
 ---
 
-### 🎁 3. Estratégia de Ação
+###  3. Estratégia de Ação
 
 - 🔴 **Crítico** → 40% de desconto  
 - 🟠 **Atenção** → 20% de desconto  
@@ -136,7 +141,7 @@ Permite transformar a previsão de NPS em uma métrica acionável:
 
 ---
 
-### 💸 4. Prioridade Financeira
+###  4. Prioridade Financeira
 
 ```python
 prioridade = risco × order_value
@@ -154,32 +159,43 @@ Essa métrica representa uma estimativa de receita em risco, permitindo:
 
 ---
 
-### 🎯 5. Ações Recomendadas
+##  Resultado
 
-Para cada cliente, o sistema sugere automaticamente:
+O sistema permite:
 
-- Nível de risco  
-- Desconto recomendado  
-- Ação de retenção  
-
-👉 Transformando o modelo em uma ferramenta prática para operação.
+- Antecipar churn  
+- Priorizar clientes críticos  
+- Reduzir desperdício de incentivos  
+- Maximizar retenção  
 
 ---
 
-## 🖥️ Aplicação Interativa (Streamlit)
+## 🖥️ Aplicação (Streamlit)
 
-Foi desenvolvida uma aplicação em Streamlit que permite simular o uso do modelo no dia a dia do negócio.
+Foi desenvolvida uma aplicação interativa que operacionaliza o modelo.
 
-Funcionalidades:
-
-- Upload de dados em CSV  
-- Previsão do NPS em tempo real  
-- Cálculo do risco de insatisfação  
-- Segmentação automática dos clientes  
-- Definição de ações de retenção  
+### 📌 Funcionalidades:
+- Upload de CSV  
+- Previsão de NPS  
+- Cálculo de risco  
+- Segmentação automática  
+- Sugestão de ações  
 - Download dos resultados  
 
-📌 O modelo deixa de ser apenas analítico e passa a ser uma ferramenta prática para tomada de decisão.
+👉 Interface simples para uso direto pelo negócio  
+
+---
+
+## 🏁 Conclusão
+
+O projeto evolui de uma análise de dados para um **sistema de decisão orientado por risco e valor**, permitindo:
+
+- Melhorar a experiência do cliente  
+- Reduzir churn  
+- Aumentar retenção  
+- Otimizar recursos  
+
+👉 Transformando dados em ação com impacto real no negócio.
 
 ---
 
