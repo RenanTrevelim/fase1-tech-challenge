@@ -1,6 +1,6 @@
 # 📊 Análise de Satisfação do Cliente (NPS) + Motor de Decisão
 
-💡 Este projeto vai além da previsão de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar risco de insatisfação e priorizar ações com impacto direto na receita.
+Este projeto vai além da previsão de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar risco de insatisfação e priorizar ações com impacto direto na receita.
 
 ---
 
@@ -21,7 +21,7 @@ Além disso, o projeto evolui para um **sistema de decisão**, permitindo que a 
 
 Dataset com informações da jornada do cliente em um e-commerce:
 
-### 🔢 Variáveis numéricas
+###  Variáveis numéricas
 - `nps_score`  
 - `delivery_delay_days`  
 - `customer_service_contacts`  
@@ -36,10 +36,10 @@ Dataset com informações da jornada do cliente em um e-commerce:
 - `customer_tenure_months`  
 - `repeat_purchase_30d`  
 
-### 🌍 Variável categórica
+###  Variável categórica
 - `customer_region`
 
-### 🆔 Identificadores
+###  Identificadores
 - `customer_id`, `order_id`
 
 ---
@@ -48,13 +48,13 @@ Dataset com informações da jornada do cliente em um e-commerce:
 
 - Alta concentração de **clientes detratores (~74%)**
 - Principais drivers de insatisfação:
-  - 🚚 Atraso na entrega  
-  - 📞 Número de reclamações  
-  - 📉 Contatos com atendimento  
+  -  Atraso na entrega  
+  -  Número de reclamações  
+  - Contatos com atendimento  
 - Principal driver positivo:
-  - ⭐ CSAT interno  
+  -  CSAT interno  
 
-💡 Foi identificado um **ponto de ruptura (~2 dias de atraso)**, onde o NPS começa a cair drasticamente.
+ Foi identificado um **ponto de ruptura (~2 dias de atraso)**, onde o NPS começa a cair drasticamente.
 
 ---
 
@@ -69,7 +69,7 @@ Foram testados diversos modelos de regressão:
 - XGBoost  
 - LightGBM  
 
-### 🏆 Modelo escolhido:
+###  Modelo escolhido:
 **Gradient Boosting**
 
 **Motivos:**
@@ -153,7 +153,7 @@ Essa métrica representa uma estimativa de receita em risco, permitindo:
 - Priorizar ações com maior retorno  
 - Otimizar o uso de incentivos  
 
-💡 **Principal ganho:**
+ **Principal ganho:**
 
 > Não basta saber quem está insatisfeito — é preciso saber quem impacta mais a receita.  
 
@@ -174,7 +174,7 @@ O sistema permite:
 
 Foi desenvolvida uma aplicação interativa que operacionaliza o modelo.
 
-### 📌 Funcionalidades:
+###  Funcionalidades:
 - Upload de CSV  
 - Previsão de NPS  
 - Cálculo de risco  
