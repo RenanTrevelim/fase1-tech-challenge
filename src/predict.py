@@ -11,8 +11,11 @@ def predict(dados):
     
     df = pd.DataFrame(dados)
 
-    df['entrega_problematica'] = ((df['delivery_delay_days'] > 0) & (df['delivery_attempts'] > 1)).astype(int)
-    df['cliente_muito_acionado'] = (df['customer_service_contacts'] >= 3).astype(int)
+    df['atraso_critico'] = (df['atraso_entrega_dias'] >= 2).astype(int)
+
+    df['problema_complexo'] = ((df['contatos_atendimento'] >= 2) & (df['tempo_resolucao_dias'] >= 3)).astype(int)
+
+    df['reclamacao_recorrente'] = (df['numero_reclamacoes'] >= 3).astype(int)
     
     df = df[COL_ENTRADA]
 
@@ -20,6 +23,6 @@ def predict(dados):
 
     df_transformado = pd.DataFrame(df_transformado, columns=COL_MODELO)
 
-    previsao = modelo.predict(df_transformado)
+    previsao_proba = modelo.predict_proba(df_transformado)[:, 1]
 
-    return previsao
+    return previsao_proba
