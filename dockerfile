@@ -17,5 +17,5 @@ COPY . .
 # Inicia o app Streamlit acessível externamente na porta 8501
 CMD ["streamlit", "run", "main.py", "--server.address=0.0.0.0", "--server.port=8501"]
 
-# docker build -t payflow-inadimplencia .
-# docker run -p 8501:8501 payflow-inadimplencia
+# docker build -t fase1-tech-challenge .
+# docker run -p 8501:8501 fase1-tech-challenge
