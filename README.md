@@ -1,17 +1,17 @@
 # 📊 Análise de Satisfação do Cliente (NPS) + Motor de Decisão
 
-Este projeto vai além da previsão de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar risco de insatisfação e priorizar ações com impacto direto na receita.
+Este projeto vai além da análise de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar o risco de insatisfação e priorizar ações com impacto direto na receita.
 
 ---
 
 ## 🎯 Objetivo do Projeto
 
-O objetivo é analisar os fatores que impactam a satisfação dos clientes (NPS) e desenvolver um modelo capaz de **prever o NPS com base em dados operacionais**.
+O objetivo é identificar os fatores que impactam a satisfação dos clientes e desenvolver um modelo capaz de **prever a probabilidade de um cliente se tornar detrator** com base em dados operacionais.
 
-Além disso, o projeto evolui para um **sistema de decisão**, permitindo que a empresa:
+Com isso, a solução permite que a empresa:
 
 - Antecipe clientes com risco de insatisfação  
-- Identifique fatores críticos da experiência  
+- Identifique os principais drivers da experiência  
 - Priorize clientes com maior impacto financeiro  
 - Direcione ações de retenção de forma estratégica  
 
@@ -21,72 +21,85 @@ Além disso, o projeto evolui para um **sistema de decisão**, permitindo que a 
 
 Dataset com informações da jornada do cliente em um e-commerce:
 
-###  Variáveis numéricas
-- `nps_score`  
-- `delivery_delay_days`  
-- `customer_service_contacts`  
-- `complaints_count`  
-- `csat_internal_score`  
-- `order_value`  
-- `items_quantity`  
-- `discount_value`  
-- `payment_installments`  
-- `delivery_time_days`  
-- `customer_age`  
-- `customer_tenure_months`  
-- `repeat_purchase_30d`  
+### 🔢 Variáveis numéricas
+- `nps`  
+- `atraso_entrega_dias`  
+- `contatos_atendimento`  
+- `numero_reclamacoes`  
+- `valor_pedido`  
+- `quantidade_itens`  
+- `valor_desconto`  
+- `parcelas_pagamento`  
+- `tempo_entrega_dias`  
+- `idade_cliente`  
+- `tempo_cliente_meses`  
 
-###  Variável categórica
-- `customer_region`
+### 🏷️ Variável categórica
+- `regiao_cliente`
 
-###  Identificadores
-- `customer_id`, `order_id`
+### 🚫 Variáveis removidas (evitar data leakage)
+- `csat_interno`  
+- `recompra_30_dias`  
 
 ---
 
 ## 🔍 Principais Insights (EDA)
 
 - Alta concentração de **clientes detratores (~74%)**
-- Principais drivers de insatisfação:
-  -  Atraso na entrega  
-  -  Número de reclamações  
-  - Contatos com atendimento  
-- Principal driver positivo:
-  -  CSAT interno  
+- Principais fatores de insatisfação:
+  - 🚚 Atraso na entrega  
+  - 📞 Alto número de contatos com atendimento  
+  - ⚠️ Reclamações recorrentes  
 
- Foi identificado um **ponto de ruptura (~2 dias de atraso)**, onde o NPS começa a cair drasticamente.
+- Foi identificado um **ponto crítico (~2 dias de atraso)**, a partir do qual a satisfação do cliente cai significativamente.
+
+👉 Insight-chave: a experiência do cliente é altamente sensível a falhas operacionais.
 
 ---
 
 ## 🧠 Modelagem Preditiva
 
-Foram testados diversos modelos de regressão:
+O problema foi tratado como **classificação**, com foco em identificar clientes com risco de insatisfação:
 
-- Linear Regression  
+- **Target:**  
+  - `1` → Detrator (NPS ≤ 6)  
+  - `0` → Não detrator  
+
+### 🤖 Modelos testados:
+
+- Logistic Regression  
 - Decision Tree  
 - Random Forest  
 - Gradient Boosting  
 - XGBoost  
 - LightGBM  
 
-###  Modelo escolhido:
-**Gradient Boosting**
+---
 
-**Motivos:**
-- Melhor desempenho (RMSE e R²)
-- Maior estabilidade (cross-validation)
-- Boa capacidade de generalização
+## 🏆 Modelo Final
+
+**Gradient Boosting Classifier (tunado)**
+
+### Motivos:
+
+- Melhor equilíbrio entre **precision e recall**
+- Alto **recall para detratores (~94%)**
+- Melhor desempenho geral (F1-score)
+- Boa estabilidade (cross-validation)
+
+👉 Foco estratégico: identificar o máximo possível de clientes em risco.
 
 ---
 
 ## 🔧 Feature Engineering
 
-Variáveis criadas com base no EDA:
+Features criadas com base nos insights do EDA:
 
-- `entrega_problematica` → atraso + múltiplas tentativas  
-- `cliente_muito_acionado` → alto volume de contatos  
+- `atraso_critico` → atraso ≥ 2 dias  
+- `problema_complexo` → múltiplos contatos + alta resolução  
+- `reclamacao_recorrente` → volume elevado de reclamações  
 
-👉 Essas features ajudam o modelo a capturar padrões de insatisfação de forma mais direta.
+👉 Essas variáveis tornam o modelo mais interpretável e alinhado ao negócio.
 
 ---
 
@@ -94,9 +107,12 @@ Variáveis criadas com base no EDA:
 
 Cross-validation (5 folds):
 
-- RMSE médio: **~1.48**
-- R² médio: **~0.65**
-- Baixa variância → modelo **estável e confiável**
+- Accuracy: **~0.83**  
+- Recall (detratores): **~0.94**  
+- F1-score: **~0.89**  
+- ROC-AUC: **~0.87**  
+
+👉 Modelo robusto, com forte capacidade de identificar clientes em risco.
 
 ---
 
@@ -106,64 +122,62 @@ O modelo foi transformado em um **motor de decisão de negócio**.
 
 ---
 
-###  1. Cálculo de Risco
+
+### 1️⃣ Probabilidade de Risco
 
 ```python
-risco = (10 - nps_previsto) / 10
+prob_detrator = modelo.predict_proba(X)[:,1]
 ```
-
-Permite transformar a previsão de NPS em uma métrica acionável:
-
-- Quanto menor o NPS → maior o risco  
-- Facilita priorização e tomada de decisão  
+- Quanto maior a probabilidade → maior o risco  
+- Permite priorização baseada em dados  
 
 ---
 
-###  2. Segmentação de Clientes
+### 2️⃣ Segmentação de Clientes
 
 - 🟢 **Seguro**  
 - 🟡 **Neutro**  
 - 🟠 **Atenção**  
 - 🔴 **Crítico**  
 
-👉 Permite identificar rapidamente quais clientes exigem ação imediata  
+👉 Identificação rápida de clientes que exigem ação  
 
 ---
 
-###  3. Estratégia de Ação
+### 3️⃣ Estratégia de Ação
 
 - 🔴 **Crítico** → 40% de desconto  
 - 🟠 **Atenção** → 20% de desconto  
 - 🟡 **Neutro** → 10% de desconto  
 - 🟢 **Seguro** → sem ação  
 
-👉 A empresa deixa de agir de forma genérica e passa a atuar de forma direcionada e eficiente  
+👉 Ações deixam de ser genéricas e passam a ser direcionadas  
 
 ---
 
 ###  4. Prioridade Financeira
 
 ```python
-prioridade = risco × order_value
+prioridade = prob_detrator * valor_pedido
 ```
 
-Essa métrica representa uma estimativa de receita em risco, permitindo:
+Permite:
 
-- Identificar clientes mais críticos financeiramente  
+- Identificar clientes com maior impacto financeiro  
 - Priorizar ações com maior retorno  
 - Otimizar o uso de incentivos  
 
- **Principal ganho:**
+👉 **Insight-chave:**
 
-> Não basta saber quem está insatisfeito — é preciso saber quem impacta mais a receita.  
+> Não basta identificar quem está em risco — é preciso priorizar quem impacta mais a receita.
 
 ---
 
-##  Resultado
+## 📈 Resultado
 
 O sistema permite:
 
-- Antecipar churn  
+- Antecipar insatisfação  
 - Priorizar clientes críticos  
 - Reduzir desperdício de incentivos  
 - Maximizar retenção  
@@ -172,31 +186,30 @@ O sistema permite:
 
 ## 🖥️ Aplicação (Streamlit)
 
-Foi desenvolvida uma aplicação interativa que operacionaliza o modelo.
+Foi desenvolvida uma aplicação interativa para uso prático pelo negócio.
 
-###  Funcionalidades:
+### Funcionalidades:
+
 - Upload de CSV  
-- Previsão de NPS  
-- Cálculo de risco  
+- Previsão de risco de detrator  
 - Segmentação automática  
 - Sugestão de ações  
 - Download dos resultados  
 
-👉 Interface simples para uso direto pelo negócio  
+👉 Interface simples e orientada à decisão  
 
 ---
 
 ## 🏁 Conclusão
 
-O projeto evolui de uma análise de dados para um **sistema de decisão orientado por risco e valor**, permitindo:
+O projeto evolui de uma análise exploratória para um **sistema de decisão orientado por risco e valor**, permitindo:
 
-- Melhorar a experiência do cliente  
-- Reduzir churn  
-- Aumentar retenção  
+- Antecipar problemas na experiência  
+- Priorizar clientes com maior impacto financeiro  
 - Otimizar recursos  
+- Aumentar retenção  
 
-👉 Transformando dados em ação com impacto real no negócio.
-
+👉 Transformando dados em decisões com impacto real no negócio.
 ---
 
 ## 🚀 Como Reproduzir os Resultados
