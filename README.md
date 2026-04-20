@@ -1,4 +1,4 @@
-# 📊 Análise de Satisfação do Cliente (NPS) + Motor de Decisão
+# 📊 Previsão de Detratores e Otimização de Retenção em E-commerce
 
 Este projeto vai além da análise de NPS, propondo um **motor de decisão orientado por dados**, capaz de antecipar o risco de insatisfação e priorizar ações com impacto direto na receita.
 
