@@ -197,8 +197,10 @@ Foi desenvolvida uma aplicação interativa para uso prático pelo negócio.
 - Download dos resultados  
 
 👉 Interface simples e orientada à decisão  
-![alt text](<Captura de tela 2026-04-23 202111.png>)
-![alt text](<Captura de tela 2026-04-23 202131.png>)
+<img width="1905" height="836" alt="Captura de tela 2026-04-23 202111" src="https://github.com/user-attachments/assets/0946683b-321a-4390-9617-9c96056afcd0" />
+<img width="1906" height="855" alt="Captura de tela 2026-04-23 202131" src="https://github.com/user-attachments/assets/db555231-6328-4f5b-ac05-ae9e02929dca" />
+
+
 ---
 
 ## 🏁 Conclusão
