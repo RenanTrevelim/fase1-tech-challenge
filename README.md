@@ -45,25 +45,29 @@ Dataset com informações da jornada do cliente em um e-commerce:
 
 ## 🔍 Principais Insights (EDA)
 
-- Alta concentração de **clientes detratores (~74%)**
-- Principais fatores de insatisfação:
-  - 🚚 Atraso na entrega  
-  - 📞 Alto número de contatos com atendimento  
-  - ⚠️ Reclamações recorrentes  
+A análise exploratória evidenciou uma forte concentração de clientes detratores (~74%), indicando um cenário crítico de experiência.
 
-- Foi identificado um **ponto crítico (~2 dias de atraso)**, a partir do qual a satisfação do cliente cai significativamente.
+Os principais fatores associados à insatisfação foram:
 
-👉 Insight-chave: a experiência do cliente é altamente sensível a falhas operacionais.
+- 🚚 Atraso na entrega  
+- 📞 Alto número de contatos com atendimento  
+- ⚠️ Reclamações recorrentes  
 
+Foi identificado um **ponto de ruptura a partir de 2 dias de atraso**, onde a satisfação passa a cair de forma mais acentuada.
+
+👉 Insight-chave:
+
+A insatisfação não é aleatória — ela está diretamente ligada a falhas operacionais recorrentes, especialmente relacionadas à logística e resolução de problemas.
 ---
 
 ## 🧠 Modelagem Preditiva
 
-O problema foi tratado como **classificação**, com foco em identificar clientes com risco de insatisfação:
+O problema foi tratado como **classificação**, com o objetivo de identificar antecipadamente clientes com risco de insatisfação.
 
-- **Target:**  
-  - `1` → Detrator (NPS ≤ 6)  
-  - `0` → Não detrator  
+Mais do que prever o NPS, o modelo foi desenvolvido para apoiar decisões de negócio, permitindo atuar antes que a insatisfação aconteça.
+
+👉 Foco principal:
+Maximizar a identificação de clientes detratores (recall da classe 1), reduzindo o risco de perda de clientes sem ação preventiva.
 
 ### 🤖 Modelos testados:
 
@@ -80,15 +84,17 @@ O problema foi tratado como **classificação**, com foco em identificar cliente
 
 **Gradient Boosting Classifier (tunado)**
 
-### Motivos:
+O modelo foi escolhido por apresentar o melhor equilíbrio entre desempenho e capacidade de identificação de clientes em risco.
 
-- Melhor equilíbrio entre **precision e recall**
-- Alto **recall para detratores (~94%)**
-- Melhor desempenho geral (F1-score)
-- Boa estabilidade (cross-validation)
+Principais pontos:
 
-👉 Foco estratégico: identificar o máximo possível de clientes em risco.
+- Alto recall para detratores (~94%)  
+- Melhor F1-score entre os modelos  
+- Boa estabilidade na validação cruzada  
 
+👉 Decisão estratégica:
+
+O modelo prioriza a identificação de clientes insatisfeitos, mesmo ao custo de alguns falsos positivos, pois o impacto de não agir sobre um cliente em risco é maior do que agir desnecessariamente.
 ---
 
 ## 🔧 Feature Engineering
@@ -146,12 +152,14 @@ prob_detrator = modelo.predict_proba(X)[:,1]
 
 ### 3️⃣ Estratégia de Ação
 
-- 🔴 **Crítico** → 40% de desconto  
-- 🟠 **Atenção** → 20% de desconto  
-- 🟡 **Neutro** → 10% de desconto  
-- 🟢 **Seguro** → sem ação  
+A segmentação dos clientes permite definir ações proporcionais ao nível de risco:
 
-👉 Ações deixam de ser genéricas e passam a ser direcionadas  
+- 🔴 Crítico → ações mais agressivas (ex: incentivos maiores)  
+- 🟠 Atenção → ações intermediárias  
+- 🟡 Neutro → ações leves  
+- 🟢 Seguro → sem necessidade de ação  
+
+Essa abordagem evita desperdício de recursos e direciona esforços para onde o impacto é maior.
 
 ---
 
@@ -184,6 +192,60 @@ O sistema permite:
 
 ---
 
+## 💰 Impacto financeiro estimado
+
+A partir da probabilidade de cada cliente se tornar detrator, foi construída uma métrica de risco financeiro, combinando:
+
+- Probabilidade de churn  
+- Valor do pedido  
+
+Isso permitiu estimar o valor financeiro em risco por cliente e por segmento.
+
+Com base nessa análise, foi identificado que:
+
+- A maior parte do risco financeiro está concentrada nos clientes críticos  
+- Ações direcionadas nesses clientes geram maior retorno potencial  
+
+Considerando um cenário conservador de recuperação:
+
+💰 Impacto financeiro estimado: **~R$ 40 mil em valor recuperável**
+
+👉 Insight-chave:
+
+O modelo não apenas identifica risco, mas permite quantificar o valor que pode ser preservado com ações preventivas.
+
+---
+
+### 📊 Retorno sobre investimento (ROI)
+
+Para avaliar a viabilidade financeira das ações de retenção, foi realizada uma simulação de ROI considerando diferentes cenários de custo operacional.
+
+Como os custos podem variar (incentivos, atendimento e execução das ações), foram definidos três cenários:
+
+- **Conservador (R$ 30 mil):** maior custo de implementação  
+- **Moderado (R$ 20 mil):** cenário intermediário  
+- **Otimista (R$ 10 mil):** operação mais eficiente  
+
+Com base no impacto financeiro estimado (~R$ 40 mil), os resultados foram:
+
+- **Conservador:** ROI de ~34%  
+- **Moderado:** ROI de ~102%  
+- **Otimista:** ROI de ~303%  
+
+### Interpretação
+
+- Mesmo em um cenário conservador, as ações apresentam retorno positivo  
+- No cenário moderado, o investimento se paga e gera valor adicional  
+- No cenário otimista, o retorno se torna significativamente elevado  
+
+### Insight principal
+
+A priorização de clientes com base em risco e valor financeiro permite maximizar o retorno das ações, tornando a estratégia mais eficiente do que abordagens genéricas.
+
+Essa abordagem transforma o modelo em uma ferramenta de decisão, conectando Machine Learning diretamente ao resultado financeiro do negócio.
+
+---
+
 ## 🖥️ Aplicação (Streamlit)
 
 Foi desenvolvida uma aplicação interativa para uso prático pelo negócio.
@@ -205,14 +267,19 @@ Foi desenvolvida uma aplicação interativa para uso prático pelo negócio.
 
 ## 🏁 Conclusão
 
-O projeto evolui de uma análise exploratória para um **sistema de decisão orientado por risco e valor**, permitindo:
 
-- Antecipar problemas na experiência  
-- Priorizar clientes com maior impacto financeiro  
-- Otimizar recursos  
-- Aumentar retenção  
+O projeto evolui de uma análise exploratória para um sistema de decisão orientado por risco e valor.
 
-👉 Transformando dados em decisões com impacto real no negócio.
+Mais do que prever insatisfação, a solução permite:
+
+- Identificar clientes em risco com antecedência  
+- Priorizar ações com base em impacto financeiro  
+- Otimizar a alocação de recursos  
+- Reduzir perdas e aumentar retenção  
+
+👉 Resultado:
+
+Machine Learning aplicado diretamente à tomada de decisão, conectando dados, operação e impacto financeiro real.
 ---
 
 ## Reproduzir no Docker
