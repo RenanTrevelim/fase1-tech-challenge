@@ -95,48 +95,70 @@ Essa transformação permitiu tratar o problema como **classificação**, focand
 
 ---
 
-### 4. Modelagem Preditiva
+### 4. Preparação dos Dados e Pipeline
 
-Foi desenvolvido um modelo de classificação para prever a probabilidade de um cliente se tornar detrator.
+Antes da modelagem, os dados passaram por etapas de pré-processamento para garantir consistência e evitar vieses.
 
-Etapas:
+Principais etapas:
 
-- Separação treino/teste  
-- Teste de múltiplos algoritmos:
-  - Logistic Regression  
-  - Decision Tree  
-  - Random Forest  
-  - Gradient Boosting  
-  - XGBoost  
-  - LightGBM  
+- Tratamento de variáveis numéricas e categóricas  
+- Padronização de nomes e formatos  
+- Remoção de variáveis com risco de data leakage  
+- Separação entre dados de treino e teste  
 
-- Seleção do modelo final: **Gradient Boosting**
-
-Critério de avaliação:
-
-- Recall para detratores (prioritário)
-- F1-score
-- ROC-AUC
+Foi estruturado um fluxo organizado (pipeline), garantindo que as transformações fossem aplicadas de forma consistente tanto no treino quanto na predição.
 
 ---
 
 ### 5. Feature Engineering
 
-Criação de variáveis baseadas em insights do EDA:
+Com base nos insights do EDA, foram criadas variáveis derivadas para capturar melhor padrões de comportamento:
 
 - `atraso_critico` → atraso ≥ 2 dias  
-- `problema_complexo` → múltiplos contatos + tempo de resolução  
-- `reclamacao_recorrente` → alto número de reclamações  
+- `problema_complexo` → múltiplos contatos + tempo de resolução elevado  
+- `reclamacao_recorrente` → alto volume de reclamações  
+
+Essas features tornam o modelo mais interpretável e alinhado ao contexto de negócio.
 
 ---
 
-### 6. Aplicação do Modelo
+### 6. Modelagem Preditiva
+
+O problema foi tratado como **classificação**, com o objetivo de identificar clientes com risco de se tornarem detratores.
+
+Foram testados diferentes algoritmos:
+
+- Logistic Regression  
+- Decision Tree  
+- Random Forest  
+- Gradient Boosting  
+- XGBoost  
+- LightGBM  
+
+O modelo final escolhido foi o **Gradient Boosting**, por apresentar melhor equilíbrio entre desempenho e capacidade de generalização.
+
+---
+
+### 7. Avaliação do Modelo
+
+O modelo foi avaliado com foco na identificação de detratores, priorizando métricas alinhadas ao problema de negócio:
+
+- Recall (prioritário) → maximizar identificação de clientes em risco  
+- F1-score → equilíbrio entre precisão e recall  
+- ROC-AUC → capacidade geral de discriminação  
+
+Essa abordagem garante que o modelo minimize o risco de não identificar clientes insatisfeitos.
+
+---
+
+### 8. Aplicação do Modelo
 
 O modelo pode ser utilizado para:
 
-- Identificar clientes com risco de insatisfação  
-- Priorizar ações de retenção  
-- Apoiar decisões operacionais  
+- Estimar a probabilidade de cada cliente se tornar detrator  
+- Segmentar clientes por nível de risco  
+- Apoiar decisões de retenção  
+- Priorizar ações com base em impacto financeiro  
 
 ---
 
