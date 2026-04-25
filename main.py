@@ -89,6 +89,23 @@ if arquivo is not None:
                 df_resultado["prob_detrator"] * df_resultado["order_value"]
             ).round(2)
 
+        # Estimativa de valor em risco (soma total)
+        valor_em_risco = df_resultado["prioridade_financeira"].sum()
+
+        # Suposição de taxa de recuperação (ex: 30%)
+        taxa_recuperacao = 0.3
+        valor_recuperavel = valor_em_risco * taxa_recuperacao
+
+        # Custo estimado das ações (baseado nos descontos)
+        df_resultado["custo_acao"] = (
+            df_resultado["desconto_percentual"] / 100 * df_resultado["valor_pedido"]
+        )
+
+        custo_total = df_resultado["custo_acao"].sum()
+
+        # ROI
+        roi = (valor_recuperavel - custo_total) / custo_total if custo_total > 0 else 0
+
         total_registros = len(df_resultado)
         media_prob_detrator = df_resultado["prob_detrator"].mean()
 
@@ -115,6 +132,25 @@ if arquivo is not None:
         with col3:
             st.metric("Clientes críticos", f"{percentual_criticos:.2%}")
             st.caption("Percentual de clientes em maior risco")
+
+        st.markdown("---")
+        st.subheader("Impacto financeiro estimado")
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.metric("Valor em risco", f"R$ {valor_em_risco:,.2f}")
+
+        with col2:
+            st.metric("Valor recuperável", f"R$ {valor_recuperavel:,.2f}")
+
+        with col3:
+            st.metric("ROI estimado", f"{roi:.2%}")
+
+        st.caption(
+            "Valores estimados com base em hipóteses de recuperação, custo de ação e valor financeiro em risco. "
+            "ROI negativo indica que, neste cenário, o custo das ações supera o valor recuperável estimado."
+        )
 
         st.markdown("---")
         st.subheader("Distribuição por segmento de risco")
