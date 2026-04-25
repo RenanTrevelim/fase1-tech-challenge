@@ -171,12 +171,11 @@ Mais do que prever insatisfação, a solução permite:
 - Otimizar a alocação de recursos  
 - Reduzir perdas e aumentar retenção  
 
-👉 Resultado:
+👉 Resultado: Machine Learning aplicado diretamente à tomada de decisão, conectando dados, operação e impacto financeiro real.
 
-Machine Learning aplicado diretamente à tomada de decisão, conectando dados, operação e impacto financeiro real.
 ---
 
-## Como Reproduzir os Resultados
+## ▶️ Como Reproduzir os Resultados
 
 ###  Clonar o repositório
 ```bash
@@ -184,13 +183,13 @@ git clone <url-do-repositorio>
 cd <nome-do-projeto>
 ```
 
-##  Execute Com Docker(Recomendado)
+## 🐳 Execute Com Docker(Recomendado)
 ```bash
 docker build -t fase1-tech-challenge .
 docker run -p 8501:8501 fase1-tech-challenge
 ```
 
-## Execução Local (Sem Docker)
+## 💻 Execução Local (Sem Docker)
 
 ### 1. Criar ambiente Virtual
 ```bash
